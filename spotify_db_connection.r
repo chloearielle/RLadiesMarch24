@@ -38,4 +38,3 @@ bowie_songs_ft <- songs %>%
 # show my most-listened Bowie songs of all time
 bowie_songs_ft %>% 
   count(song_name, sort = TRUE)
-# TODO: find a way to tidy remasters: remove everything after hyphen IF song_name contains Remaster
