@@ -14,27 +14,45 @@ db_conn <- DBI::dbConnect(RSQLite::SQLite(), "rladies_march24.db")
 # check the tables present within this database
 dbListTables(db_conn)
 
+
+############## USING DPLYR ############## 
 # create a tbl object for each table within the database
 listens <- tbl(db_conn, sql("listens"))
 songs <- tbl(db_conn, sql("songs"))
 
-# filter to only include songs by David Bowie
-ongs %>% 
+
+# filter the dataset to only include songs by David Bowie
+songs %>% 
   inner_join(listens) %>% 
   select(song_name, artist_name, album_name, timestamp) %>% 
   filter(artist_name == "David Bowie") %>% 
   arrange(-timestamp) %>% 
   head(n = 100)
 
-# create a table with only my listens to David Bowie
-bowie_songs_ft <- songs %>% 
-  inner_join(listens) %>% 
-  select(song_name, artist_name, album_name, timestamp) %>% 
-  filter(artist_name == "David Bowie") %>% 
-  collect() # collect() function forces the database to return the full data, 
-  # rather than 'lazily' running the query
 
-  
 # show my most-listened Bowie songs of all time
-bowie_songs_ft %>% 
-  count(song_name, sort = TRUE)
+songs %>% 
+  inner_join(listens) %>% 
+  filter(artist_name == "David Bowie") %>% 
+  count(song_name, sort = TRUE) # %>% # TODO: test this query with and without collect() at end
+# collect() # collect() function forces the database to return the full data, 
+# rather than 'lazily' running the query
+
+# use the show_query() function from dplyr package
+# to show how the dplyr translates into SQL
+songs %>% 
+  inner_join(listens) %>% 
+  filter(artist_name == "David Bowie") %>% 
+  count(song_name, sort = TRUE) %>% 
+  show_query()
+
+
+############## USING SQL ############## 
+# picking out min and max timestamp of Australia listens
+dbGetQuery(db_conn, "
+  SELECT min(timestamp), max(timestamp)
+  FROM listens l
+  WHERE conn_country = 'AU';
+")
+
+
