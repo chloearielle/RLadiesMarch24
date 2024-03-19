@@ -1,6 +1,7 @@
 # load required packages
 library(tidyverse)
 library(RSQLite)
+library(DBI)
 # library(dbplyr) # DON'T NEED TO LOAD DBPLYR IN!! (so long as it is installed)
 # FUN FACT: dplyr automatically loads in dbplyr when it sees you working with a database
 # in this case, when it sees us setting up a database connection using dbConnect() below
